@@ -26,9 +26,8 @@ const App = () => {
   const [loginType, setLoginType] = useState("");
   const [urlAvatar, setURLAvatar] = useState("");
   const [totalItems, setTotalItems] = useState(0);
-  const [order, setOrder] = useState({});
-  const [testOrder, setTestOrder] = useState({});
-
+  const [order, setOrder] = useState([{}]);
+  const [orderListUser, setOrderListUser] = useState([]);
   useEffect(() => {
     const check = window.localStorage.getItem("checkLogin");
     const user = window.localStorage.getItem("user");
@@ -38,7 +37,11 @@ const App = () => {
       const ava = window.localStorage.getItem("urlAvatar");
       setURLAvatar(JSON.parse(ava));
       SetUserLogin(JSON.parse(user));
-      getOrderCustomer(JSON.parse(user).userID);
+      if (JSON.parse(check) === true) {
+        getOrderCustomer(JSON.parse(user).userID);
+        // getOrderDetail()
+      }
+
       fetchCart(JSON.parse(check), JSON.parse(user));
     }
 
@@ -401,26 +404,34 @@ const App = () => {
     }
   };
 
-  const getOrders = async () => {
-    await commerce.checkout
-      .getLive("chkt_RyWOwm9QBGwnEa")
-      .then((response) => setTestOrder(response));
-  };
-  getOrders();
+  // const getOrders = async () => {
+  //   await commerce.checkout
+  //     .getLive("chkt_RyWOwm9QBGwnEa")
+  //     .then((response) => setTestOrder(response));
+  // };
 
-  const getOrderCustomer = async (userID) => {
-    const url = "http://localhost:8000/api/order/find_order_cus/" + userID;
-    axios
-      .get(url)
-      .then(function (response) {
-        // handle success
-        setOrder(response.data);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      });
-  };
+  function getOrderDetail(
+    orderID,shippingData,
+    paymentType,
+    date,
+    status
+  ) {
+    commerce.checkout.getLive(orderID).then((response) => {
+      // setTestOrder(old => [...old,orderID])
+
+      const object = {
+        orderID: orderID,
+        orderDetail: response,
+        shippingData:shippingData,
+        paymentType:paymentType,
+        date: date,
+        status: status
+
+      };
+      setOrderListUser((old) => [...old, object]);
+      // console.log(object)
+    });
+  }
 
   const customStyles = {
     content: {
@@ -436,10 +447,32 @@ const App = () => {
       borderColor: "black",
     },
   };
-  // console.log(userLogin)
-  // console.log("Login",loginSuccess)
-  // console.log(loginType)
-  // console.log("url",urlAvatar)
+
+  function getOrderCustomer(userID) {
+    const url = "http://localhost:8000/api/order/find_order_cus/" + userID;
+    axios
+      .get(url)
+      .then(function (response) {
+        // handle success
+        setOrder(response.data);
+        for (var i = 0; i < response.data.length; i++) {
+          getOrderDetail(
+            response.data[i].orderID,
+            response.data[i].shippingData,
+            response.data[i].paymentType,
+            response.data[i].date,
+            response.data[i].status,
+          );
+        }
+
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  }
+
+  console.log(orderListUser)
 
   const [modalOpen, setModalOpen] = useState(false);
   return (
@@ -538,7 +571,7 @@ const App = () => {
           </Route>
 
           <Route exact path="/order">
-            <Orders orderList={order} />
+            <Orders orderList={orderListUser} />
           </Route>
         </Switch>
 

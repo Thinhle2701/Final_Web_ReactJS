@@ -251,7 +251,6 @@ const DeliveryForm = ({ next }) => {
           </div>
         </form>
       </FormProvider>
-      <input></input>
     </div>
   );
 };

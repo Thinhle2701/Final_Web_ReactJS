@@ -5,35 +5,32 @@ import OrderItem from "./OrderItems/OrderItem"
 import axios from "axios";
 const Orders = ({ orderList }) => {
   const [orderState,setOrderState] = useState([{}])
-  useEffect(() => {
-    async function getOrderCustomer (userID){
-      const url = "http://localhost:8000/api/order/find_order_cus/" + userID
-      axios.get(url)
-      .then(function (response) {
-        // handle success
-        setOrderState(response.data)
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-    }
+  // useEffect(() => {
+  //   // function getOrderCustomer (userID){
+  //   //   const url = "http://localhost:8000/api/order/find_order_cus/" + userID
+  //   //   axios.get(url)
+  //   //   .then(function (response) {
+  //   //     // handle success
+  //   //     setOrderState(response.data)
+  //   //   })
+  //   //   .catch(function (error) {
+  //   //     // handle error
+  //   //     console.log(error);
+  //   //   })
+  //   // }
 
-    const user = window.localStorage.getItem("user");
-    console.log(JSON.parse(user).userID);
+  //   // const user = window.localStorage.getItem("user");
+  //   // console.log(JSON.parse(user).userID);
 
-    getOrderCustomer(JSON.parse(user).userID)
+  //   // getOrderCustomer(JSON.parse(user).userID)
 
-  }, []);
+  // }, []);
+
+  console.log(orderList)
   
 
-  console.log("order ne",orderState);
   return (
     <>
-          <div>
-          <p>hello</p>
-          <input></input>
-        </div>
       <Typography
         variant="h6"
         gutterBottom
@@ -42,9 +39,9 @@ const Orders = ({ orderList }) => {
         Order 
       </Typography>
 
-      {orderState.map((product) => (
-        <div>
-        <OrderItem orderID={product.orderID}/>
+      {orderList.map((ord) => (
+        <div key={ord.orderID}>
+        <OrderItem  orderItem={ord} detail={ord.orderDetail}  />
         </div>
     ))}
     </>

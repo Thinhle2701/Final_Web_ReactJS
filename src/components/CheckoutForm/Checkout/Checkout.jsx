@@ -54,6 +54,8 @@ const Checkout = ({ cart, user, setCart, setUser }) => {
     }
   };
 
+  console.log("step",activeStep)
+
   const addNewEmptyCart = async () => {
     await commerce.cart.refresh().then((cart) => {
       setCart(cart);
@@ -74,7 +76,7 @@ const Checkout = ({ cart, user, setCart, setUser }) => {
 
   const Confirmation = () => (
     <div>
-      <input></input>
+      <p>Thank you for Your Order</p>
     </div>
   );
 
@@ -122,7 +124,23 @@ const Checkout = ({ cart, user, setCart, setUser }) => {
             ))}
           </Stepper>
 
-          {activeStep === steps.length ? <Confirmation /> : <Form />}
+          {/* {activeStep === steps.length ? <Confirmation /> : <Form />} */}
+          {activeStep === 0 ? (
+            <DeliveryForm next={next} />
+          ) : (
+            <div>
+            {activeStep === 2 ?(<Confirmation />) :( <PaymentForm
+              cart={cart}
+              back={backStep}
+              next={nextStep}
+              shippingData={shippingData}
+              checkoutToken={checkoutToken}
+              customer={user}
+              refreshCart={addNewEmptyCart}
+              city={cityName}
+            />)}
+            </div>
+          )}
         </Paper>
       </main>
     </>

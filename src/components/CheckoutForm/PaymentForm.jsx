@@ -32,7 +32,7 @@ const PaymentForm = ({
 
     const today = new Date();
     const time =
-      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      today.getHours() + ":" + today.getMinutes();
     const currentDate =
       time +
       " " +
@@ -50,15 +50,18 @@ const PaymentForm = ({
         customerID: customer.userID,
         total: checkoutToken.live.subtotal.formatted_with_symbol,
         paymentType: type_payment,
-        firstName: shippingData.firstName,
-        lastName: shippingData.lastName,
-        email: shippingData.email,
-        phone: shippingData.phone,
-        city: city,
-        district: shippingData.shippingDistrict,
-        ward: shippingData.shippingWard,
-        address: shippingData.address,
+        shippingData: {
+          firstName:shippingData.firstName,
+          lastName: shippingData.lastName,
+          email: shippingData.email,
+          phone: shippingData.phone,
+          city: city,
+          district: shippingData.shippingDistrict,
+          ward: shippingData.shippingWard,
+          address: shippingData.address,
+        },
         date: currentDate,
+        status: 'is Delivering'
       })
       .then((response) => {
         console.log(response);
@@ -68,7 +71,7 @@ const PaymentForm = ({
       });
 
     refreshCart();
-    next();
+    
   };
 
   return (
@@ -164,8 +167,9 @@ const PaymentForm = ({
         <ElementsConsumer>
           {({ elements, stripe }) => (
             <form
-              onSubmit={(e) => {
-                handleSubmit(e);
+              onSubmit={async (e) => {
+                await handleSubmit(e);
+                next();
               }}
             >
               {checkCard === true ? (
