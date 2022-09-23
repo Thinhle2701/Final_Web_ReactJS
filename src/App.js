@@ -410,13 +410,13 @@ const App = () => {
   //     .then((response) => setTestOrder(response));
   // };
 
-  function getOrderDetail(
+  const getOrderDetail = async(
     orderID,shippingData,
     paymentType,
     date,
     status
-  ) {
-    commerce.checkout.getLive(orderID).then((response) => {
+  ) =>{
+   await commerce.checkout.getLive(orderID).then((response) => {
       // setTestOrder(old => [...old,orderID])
 
       const object = {
@@ -426,11 +426,20 @@ const App = () => {
         paymentType:paymentType,
         date: date,
         status: status
-
       };
       setOrderListUser((old) => [...old, object]);
       // console.log(object)
     });
+  }
+
+  function getorddetail(date)
+  {
+    const object = {
+
+      date: date,
+
+    };
+    setOrderListUser((old) => [...old, object]);
   }
 
   const customStyles = {
@@ -452,19 +461,20 @@ const App = () => {
     const url = "http://localhost:8000/api/order/find_order_cus/" + userID;
     axios
       .get(url)
-      .then(function (response) {
+      .then( async function (response) {
         // handle success
-        setOrder(response.data);
-        for (var i = 0; i < response.data.length; i++) {
-          getOrderDetail(
-            response.data[i].orderID,
-            response.data[i].shippingData,
-            response.data[i].paymentType,
-            response.data[i].date,
-            response.data[i].status,
+        setOrder(response.data.order);
+        for (var i = 0; i < response.data.order.length; i++) {
+          await getOrderDetail(
+            response.data.order[i].orderID,
+            response.data.order[i].shippingData,
+            response.data.order[i].paymentType,
+            response.data.order[i].date,
+            response.data.order[i].status,
           );
-        }
 
+        }
+        console.log(response)
       })
       .catch(function (error) {
         // handle error
@@ -472,7 +482,7 @@ const App = () => {
       });
   }
 
-  console.log(orderListUser)
+  console.log("order list ",orderListUser)
 
   const [modalOpen, setModalOpen] = useState(false);
   return (

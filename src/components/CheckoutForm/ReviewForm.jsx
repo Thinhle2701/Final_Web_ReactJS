@@ -4,7 +4,7 @@ const ReviewForm = ({ cart,checkoutToken }) => {
   return (
     <>
       <Typography variant="h6" gutterBottom style={{ fontSize: "30px" }}>
-        Order summary
+        Order {checkoutToken.id}
       </Typography>
       <List disablePadding>
         {checkoutToken.live.line_items.map((product) => (

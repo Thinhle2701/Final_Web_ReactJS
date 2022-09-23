@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef, createRef } from "react";
 import ReviewForm from "./ReviewForm";
 import axios from "axios";
+import emailjs from "@emailjs/browser";
+
 import { Typography, Button, Divider, Checkbox } from "@material-ui/core";
 import {
   Elements,
@@ -8,7 +10,6 @@ import {
   ElementsConsumer,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 const PaymentForm = ({
   cart,
@@ -24,19 +25,17 @@ const PaymentForm = ({
   console.log("shipping data", shippingData);
   const [checkCOD, setCheckCOD] = useState(true);
   const [checkCard, setCheckCard] = useState(false);
+  const [img, setImg] = useState("");
+  const ref = createRef(null);
   console.log("cod: ", checkCOD);
   console.log("card: ", !checkCOD);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const today = new Date();
-    const time =
-      today.getHours() + ":" + today.getMinutes();
+    const time = today.getHours() + ":" + today.getMinutes();
     const currentDate =
-      time +
-      " " +
-      `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+      `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}` + " " + time ;
     var type_payment = "";
     console.log("user: ", customer);
     if (checkCOD === true) {
@@ -44,6 +43,7 @@ const PaymentForm = ({
     } else {
       type_payment = "Card";
     }
+
     await axios
       .post("http://localhost:8000/api/order/add_order", {
         orderID: checkoutToken.id,
@@ -51,7 +51,7 @@ const PaymentForm = ({
         total: checkoutToken.live.subtotal.formatted_with_symbol,
         paymentType: type_payment,
         shippingData: {
-          firstName:shippingData.firstName,
+          firstName: shippingData.firstName,
           lastName: shippingData.lastName,
           email: shippingData.email,
           phone: shippingData.phone,
@@ -61,7 +61,7 @@ const PaymentForm = ({
           address: shippingData.address,
         },
         date: currentDate,
-        status: 'is Delivering'
+        status: "is Delivering",
       })
       .then((response) => {
         console.log(response);
@@ -70,13 +70,35 @@ const PaymentForm = ({
         console.log(err);
       });
 
+    const name = shippingData.firstName + shippingData.lastName;
+    emailjs.init("WnU7YjuW7qxqmeZng");
+    emailjs
+      .send("service_1rdwrdi", "template_qlzppko", {
+        from_name: "Apple Store",
+        user_name: name,
+        ord_id: checkoutToken.id,
+        user_email: shippingData.email,
+        payment: type_payment,
+        phone: shippingData.phone,
+        address: shippingData.address,
+      })
+      .then(
+        function () {
+          console.log("SUCCESS!");
+        },
+        function (error) {
+          console.log("FAILED...", error);
+        }
+      );
+
     refreshCart();
-    
   };
 
   return (
     <>
-      <ReviewForm cart={cart} checkoutToken={checkoutToken} />
+      <div ref={ref}>
+        <ReviewForm cart={cart} checkoutToken={checkoutToken} />
+      </div>
       <Divider />
       <div style={{ display: "flex" }}>
         <Typography variant="h6" gutterBottom style={{ margin: "20px 0" }}>
@@ -178,7 +200,10 @@ const PaymentForm = ({
                   <br /> <br />{" "}
                 </div>
               ) : (
-                <p>you will recieve after</p>
+                <div>
+                  <p>you will recieve after</p>
+                  <img src={img}></img>
+                </div>
               )}
 
               <div style={{ display: "flex", justifyContent: "space-between" }}>

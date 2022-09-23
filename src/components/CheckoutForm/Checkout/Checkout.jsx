@@ -17,6 +17,7 @@ import PaymentForm from "../PaymentForm";
 import { commerce } from "../../../lib/commerce";
 import dataShipping from "../DataAddress.json";
 
+
 const steps = ["Delivery", "Payment"];
 const Checkout = ({ cart, user, setCart, setUser }) => {
   const classes = useStyles();
@@ -77,6 +78,7 @@ const Checkout = ({ cart, user, setCart, setUser }) => {
   const Confirmation = () => (
     <div>
       <p>Thank you for Your Order</p>
+      <img style={{backgroundColor:'white',height:'200px',width:'400px'}} src="https://c.tenor.com/-H_8FJt3Q6gAAAAC/good2go-yes.gif"></img>
     </div>
   );
 

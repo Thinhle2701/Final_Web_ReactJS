@@ -11,11 +11,33 @@ import {
   IconButton,
   Button,
 } from "@material-ui/core";
+import ArrowLeft from "@material-ui/icons/ArrowLeft";
+import ArrowRight from "@material-ui/icons/ArrowRight";
+import ButtonBase from "@material-ui/core/ButtonBase";
 import { commerce } from "../../../lib/commerce";
 const OrderItem = ({ orderItem, detail }) => {
   const [orderDetail, setOrderDetail] = useState({});
   const [list, setList] = useState([{}]);
-  console.log(detail.line_items.length);
+  // console.log(detail.line_items.length);
+  const [indexItem, setIndexItem] = useState(0);
+  const handleClickArrowRight = () => {
+    if (indexItem == detail.line_items.length - 1) {
+      setIndexItem(0);
+    } else {
+      var temp = indexItem + 1;
+      setIndexItem(temp);
+    }
+  };
+
+  const handleClickArrowLeft = () => {
+    if (indexItem == 0) {
+      setIndexItem(0);
+    } else {
+      var temp = indexItem - 1;
+      setIndexItem(temp);
+    }
+  };
+
   return (
     <>
       {/* <div>
@@ -53,7 +75,7 @@ const OrderItem = ({ orderItem, detail }) => {
       </div> */}
 
       <div>
-        <Card style={{ marginLeft: "20%", marginRight: "20%", margin: "50px", }}>
+        <Card style={{ marginLeft: "20%", marginRight: "20%", margin: "50px" }}>
           <div style={{ display: "flex" }}>
             <div style={{ marginLeft: "2%" }}>
               <p style={{ fontWeight: "bold" }}>ORDER: {orderItem.orderID}</p>
@@ -67,31 +89,54 @@ const OrderItem = ({ orderItem, detail }) => {
               <p>🟠 {orderItem.status}</p>
             </div>
           </div>
-          <div style={{ }}>
+          <div style={{}}>
             <div style={{ alignItems: "center", textAlign: "center" }}>
               <p style={{ fontWeight: "bold", fontSize: "30px" }}>
-                {detail.line_items[0].product_name}
+                {detail.line_items[indexItem].product_name}
               </p>
             </div>
 
-            <div style={{marginLeft:'100px',display:'flex',alignItems:'center'}}>
-              <img
-                src={detail.line_items[0].image.url}
+            <div style={{ display: "flex", marginLeft: "20px" }}>
+              <ButtonBase onClick={() => handleClickArrowLeft()}>
+                <ArrowLeft style={{ fontSize: "40px"}} />
+              </ButtonBase>
+              <div
                 style={{
-                  height: "150px",
-                  width: "200px",
-                  marginRight: "10px",
-                  marginLeft: "10px",
+                  marginLeft: "100px",
+                  display: "flex",
+                  alignItems: "center",
                 }}
-              ></img>
-                <p style={{ fontSize: "20px",paddingLeft:"10%" }}>Quantity: 
-                {" "} {detail.line_items[0].quantity}
-              </p>
-
-              <p style={{ fontSize: "20px",paddingLeft:"10%" }}>Price Per unit: 
-                {" "} {detail.line_items[0].price.formatted_with_symbol}
-
-              </p>
+              >
+                <img
+                  src={detail.line_items[indexItem].image.url}
+                  style={{
+                    height: "150px",
+                    width: "200px",
+                    marginRight: "10px",
+                    marginLeft: "10px",
+                  }}
+                ></img>
+                <div style={{ fontSize: "20px", marginLeft: "200px" }}>
+                  <p>Quantity: {detail.line_items[indexItem].quantity}</p>
+                </div>
+                <div style={{ fontSize: "20px", marginLeft: "200px" }}>
+                  <p style={{ fontSize: "20px" }}>
+                    Price Per unit:{" "}
+                    {detail.line_items[indexItem].price.formatted_with_symbol}
+                  </p>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  marginLeft: "auto",
+                  marginRight: "40px",
+                }}
+              >
+                <ButtonBase onClick={handleClickArrowRight}>
+                  <ArrowRight style={{ fontSize: "40px" }} />
+                </ButtonBase>
+              </div>
             </div>
           </div>
 
