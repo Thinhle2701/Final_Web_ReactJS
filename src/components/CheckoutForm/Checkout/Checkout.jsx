@@ -13,10 +13,11 @@ import { Stepper } from "@material-ui/core";
 import axios from "axios";
 import useStyles from "./styles";
 import DeliveryForm from "../DeliveryForm";
+import greenTick from "../../../assets/greenTick.png";
 import PaymentForm from "../PaymentForm";
 import { commerce } from "../../../lib/commerce";
+import { Link, useLocation } from "react-router-dom";
 import dataShipping from "../DataAddress.json";
-
 
 const steps = ["Delivery", "Payment"];
 const Checkout = ({ cart, user, setCart, setUser }) => {
@@ -55,7 +56,7 @@ const Checkout = ({ cart, user, setCart, setUser }) => {
     }
   };
 
-  console.log("step",activeStep)
+  console.log("step", activeStep);
 
   const addNewEmptyCart = async () => {
     await commerce.cart.refresh().then((cart) => {
@@ -74,11 +75,52 @@ const Checkout = ({ cart, user, setCart, setUser }) => {
         });
     });
   };
+  const handleContinueToShop = () => {
+    window.location.href = "/";
+  };
 
+  const handleGoToOrder = () => {
+    window.location.href = "/order";
+  };
   const Confirmation = () => (
     <div>
-      <p>Thank you for Your Order</p>
-      <img style={{backgroundColor:'white',height:'200px',width:'400px'}} src="https://c.tenor.com/-H_8FJt3Q6gAAAAC/good2go-yes.gif"></img>
+      <div style={{ textAlign: "center" }}>
+        <p style={{ fontWeight: "bold", fontSize: "30px" }}>
+          Thank you for Your Order
+        </p>
+        <img
+          style={{ backgroundColor: "white", height: "100px", width: "150px" }}
+          src={greenTick}
+        ></img>
+      </div>
+      <div style={{ textAlign: "center" }}>
+        <p style={{ fontWeight: "bold" }}>
+          We sent an email for your about order details. Please check mail to
+          have fully status about your order{" "}
+        </p>
+      </div>
+      <div style={{ display: "flex" }}>
+        <div style={{ marginLeft: "10%" }}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              handleContinueToShop();
+            }}
+          >
+            Continue to Shop
+          </Button>
+        </div>
+        <div style={{ marginLeft: "60%" }}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              handleGoToOrder();
+            }}
+          >
+            See Your Order
+          </Button>
+        </div>
+      </div>
     </div>
   );
 
@@ -131,16 +173,20 @@ const Checkout = ({ cart, user, setCart, setUser }) => {
             <DeliveryForm next={next} />
           ) : (
             <div>
-            {activeStep === 2 ?(<Confirmation />) :( <PaymentForm
-              cart={cart}
-              back={backStep}
-              next={nextStep}
-              shippingData={shippingData}
-              checkoutToken={checkoutToken}
-              customer={user}
-              refreshCart={addNewEmptyCart}
-              city={cityName}
-            />)}
+              {activeStep === 2 ? (
+                <Confirmation />
+              ) : (
+                <PaymentForm
+                  cart={cart}
+                  back={backStep}
+                  next={nextStep}
+                  shippingData={shippingData}
+                  checkoutToken={checkoutToken}
+                  customer={user}
+                  refreshCart={addNewEmptyCart}
+                  city={cityName}
+                />
+              )}
             </div>
           )}
         </Paper>

@@ -1,49 +1,67 @@
 import React, { useState, useEffect } from "react";
 import { Typography, List, ListItem, ListItemText } from "@material-ui/core";
 import { commerce } from "../../lib/commerce";
-import OrderItem from "./OrderItems/OrderItem"
+import OrderItem from "./OrderItems/OrderItem";
 import axios from "axios";
-const Orders = ({ orderList }) => {
-  const [orderState,setOrderState] = useState([{}])
+const Orders = ({ orderList, isLoading }) => {
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const [orderState, setOrderState] = useState([{}]);
+
   // useEffect(() => {
-  //   // function getOrderCustomer (userID){
-  //   //   const url = "http://localhost:8000/api/order/find_order_cus/" + userID
-  //   //   axios.get(url)
-  //   //   .then(function (response) {
-  //   //     // handle success
-  //   //     setOrderState(response.data)
-  //   //   })
-  //   //   .catch(function (error) {
-  //   //     // handle error
-  //   //     console.log(error);
-  //   //   })
-  //   // }
+  //   const setLoading = async () => {
+  //     await delay(100);
+  //     setIsLoading(true);
+  //     await delay(3000);
+  //     setIsLoading(false);
+  //   };
+  //   setLoading();
+  // }, [orderList]);
 
-  //   // const user = window.localStorage.getItem("user");
-  //   // console.log(JSON.parse(user).userID);
+  console.log(orderList);
 
-  //   // getOrderCustomer(JSON.parse(user).userID)
-
-  // }, []);
-
-  console.log(orderList)
-  
+  const setValue = () => {
+    console.log("hello");
+  };
 
   return (
     <>
-      <Typography
-        variant="h6"
-        gutterBottom
-        style={{ fontSize: "30px", marginTop: "100px" }}
-      >
-        Order 
-      </Typography>
-
-      {orderList.map((ord) => (
-        <div key={ord.orderID}>
-        <OrderItem  orderItem={ord} detail={ord.orderDetail}  />
+      {isLoading === true ? (
+        <div style={{ textAlign: "center" }}>
+          <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/6d391369321565.5b7d0d570e829.gif"></img>
         </div>
-    ))}
+      ) : (
+        <div>
+          {orderList.length === 0 ? (
+            <div style={{textAlign:"center",marginTop:"20%"}}>
+              <p>You do not have any order</p>
+            </div>
+          ) : (
+            <div>
+              <Typography
+                variant="h6"
+                gutterBottom
+                style={{
+                  fontSize: "30px",
+                  marginTop: "100px",
+                  textAlign: "center",
+                }}
+              >
+                Your Order
+              </Typography>
+
+              {orderList.map((ord) => (
+                <div key={ord.orderID}>
+                  <OrderItem
+                    ordID={ord.orderID}
+                    orderItem={ord}
+                    detail={ord.orderDetail}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 };

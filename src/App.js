@@ -28,12 +28,13 @@ const App = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [order, setOrder] = useState([{}]);
   const [orderListUser, setOrderListUser] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const check = window.localStorage.getItem("checkLogin");
     const user = window.localStorage.getItem("user");
-    SetLoginSuccess(JSON.parse(check));
 
     if (JSON.parse(check) !== null) {
+      SetLoginSuccess(JSON.parse(check));
       const ava = window.localStorage.getItem("urlAvatar");
       setURLAvatar(JSON.parse(ava));
       SetUserLogin(JSON.parse(user));
@@ -41,8 +42,11 @@ const App = () => {
         getOrderCustomer(JSON.parse(user).userID);
         // getOrderDetail()
       }
-
       fetchCart(JSON.parse(check), JSON.parse(user));
+    } else {
+      window.localStorage.setItem("checkLogin", JSON.stringify(false));
+      SetLoginSuccess(false);
+      fetchCart(false, "null");
     }
 
     fetchProducts();
@@ -276,6 +280,21 @@ const App = () => {
       if (Type === "normal") {
         setURLAvatar(userLogin.url);
         window.localStorage.setItem("urlAvatar", JSON.stringify(userLogin.url));
+        window.localStorage.setItem("user", JSON.stringify(userLogin));
+        const cartTemp = window.localStorage.getItem("cartTemp");
+        const url =
+          "http://localhost:8000/api/user/update_cart/" + userLogin.userID;
+        axios
+          .put(url, {
+            cartID: JSON.parse(cartTemp).id,
+          })
+          .then((response) => {
+            console.log(response);
+            SetUserLogin(response.data);
+            window.localStorage.setItem("user", JSON.stringify(response.data));
+            fetchCart(true, response.data);
+            window.location.reload();
+          });
         // console.log("user",userLogin)
         // fetchCart(checkLogin, userLogin);
       } else if (Type === "google") {
@@ -389,55 +408,140 @@ const App = () => {
           "urlAvatar",
           JSON.stringify(userLogin.picture.data.url)
         );
-        addNewEmptyCart();
-
-        // axios.post("http://localhost:8000/api/user/add_user_external", {
-        //   username: userLogin.name,
-        //   email: userLogin.email,
-        //   login_type: "facebook",
-        //   url: userLogin.picture.data.url,
-        // });
+        const cartTemp = window.localStorage.getItem("cartTemp");
+        console.log(JSON.parse(cartTemp));
+        if (JSON.parse(cartTemp) !== null) {
+          axios
+            .post("http://localhost:8000/api/user/add_user_external", {
+              username: userLogin.name,
+              email: userLogin.email,
+              login_type: "facebook",
+              password: " ",
+              url: userLogin.picture.data.url,
+              cartID: JSON.parse(cartTemp).id,
+            })
+            .then(async (response) => {
+              window.location.reload();
+              window.localStorage.setItem(
+                "user",
+                JSON.stringify(response.data.data)
+              );
+              SetUserLogin(response.data.data);
+            })
+            .catch((err) => {
+              if (err.response.data.message === "Username is already exists") {
+                axios
+                  .post(
+                    "http://localhost:8000/api/user/find_facebook_account",
+                    {
+                      username: userLogin.name,
+                      email: userLogin.email,
+                    }
+                  )
+                  .then(async (res) => {
+                    // SetUserLogin(res.data);
+                    // window.localStorage.setItem(
+                    //   "user",
+                    //   JSON.stringify(res.data)
+                    // );
+                    // fetchCart(true, res.data);
+                    const url =
+                      "http://localhost:8000/api/user/update_cart/" +
+                      res.data.userID;
+                    axios
+                      .put(url, {
+                        cartID: JSON.parse(cartTemp).id,
+                      })
+                      .then((response) => {
+                        console.log(response);
+                        SetUserLogin(response.data);
+                        window.localStorage.setItem(
+                          "user",
+                          JSON.stringify(response.data)
+                        );
+                        fetchCart(true, response.data);
+                        window.location.reload();
+                      });
+                  });
+              }
+              console.log(err);
+            });
+        } else {
+          commerce.cart.refresh().then((cart) => {
+            axios
+              .post("http://localhost:8000/api/user/add_user_external", {
+                username: userLogin.name,
+                email: userLogin.email,
+                login_type: "google",
+                password: " ",
+                url: userLogin.picture.data.url,
+                cartID: cart.id,
+              })
+              .then(async (response) => {
+                window.localStorage.setItem(
+                  "user",
+                  JSON.stringify(response.data.data)
+                );
+                SetUserLogin(response.data.data);
+                window.location.reload();
+                console.log(response.data);
+              })
+              .catch((err) => {
+                if (
+                  err.response.data.message === "Username is already exists"
+                ) {
+                  axios
+                    .post(
+                      "http://localhost:8000/api/user/find_facebook_account",
+                      {
+                        username: userLogin.name,
+                        email: userLogin.email,
+                      }
+                    )
+                    .then(async (res) => {
+                      SetUserLogin(res.data);
+                      window.localStorage.setItem(
+                        "user",
+                        JSON.stringify(res.data)
+                      );
+                      fetchCart(true, res.data);
+                    });
+                }
+                console.log(err);
+              });
+          });
+        }
       }
-
       window.localStorage.setItem("checkLogin", JSON.stringify(checkLogin));
-      // window.localStorage.setItem("user", JSON.stringify(user));
     }
   };
 
-  // const getOrders = async () => {
-  //   await commerce.checkout
-  //     .getLive("chkt_RyWOwm9QBGwnEa")
-  //     .then((response) => setTestOrder(response));
-  // };
-
-  const getOrderDetail = async(
-    orderID,shippingData,
+  const getOrderDetail = async (
+    orderID,
+    shippingData,
     paymentType,
     date,
     status
-  ) =>{
-   await commerce.checkout.getLive(orderID).then((response) => {
+  ) => {
+    await commerce.checkout.getLive(orderID).then((response) => {
       // setTestOrder(old => [...old,orderID])
 
       const object = {
         orderID: orderID,
         orderDetail: response,
-        shippingData:shippingData,
-        paymentType:paymentType,
+        shippingData: shippingData,
+        paymentType: paymentType,
         date: date,
-        status: status
+        status: status,
       };
       setOrderListUser((old) => [...old, object]);
       // console.log(object)
     });
-  }
+  };
 
-  function getorddetail(date)
-  {
+  function getorddetail(date) {
     const object = {
-
       date: date,
-
     };
     setOrderListUser((old) => [...old, object]);
   }
@@ -461,20 +565,22 @@ const App = () => {
     const url = "http://localhost:8000/api/order/find_order_cus/" + userID;
     axios
       .get(url)
-      .then( async function (response) {
+      .then(async function (response) {
         // handle success
         setOrder(response.data.order);
+        setIsLoading(true);
         for (var i = 0; i < response.data.order.length; i++) {
           await getOrderDetail(
             response.data.order[i].orderID,
             response.data.order[i].shippingData,
             response.data.order[i].paymentType,
             response.data.order[i].date,
-            response.data.order[i].status,
+            response.data.order[i].status
           );
-
+          setIsLoading(false);
         }
-        console.log(response)
+
+        console.log(response);
       })
       .catch(function (error) {
         // handle error
@@ -482,7 +588,12 @@ const App = () => {
       });
   }
 
-  console.log("order list ",orderListUser)
+  const initializeCart = async () => {
+    await commerce.cart.refresh().then((cart) => {
+      setCart(cart);
+    });
+  };
+  console.log("order list ", orderListUser);
 
   const [modalOpen, setModalOpen] = useState(false);
   return (
@@ -581,7 +692,7 @@ const App = () => {
           </Route>
 
           <Route exact path="/order">
-            <Orders orderList={orderListUser} />
+            <Orders orderList={orderListUser} isLoading={isLoading} />
           </Route>
         </Switch>
 
