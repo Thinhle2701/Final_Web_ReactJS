@@ -6,6 +6,7 @@ import axios from "axios";
 const Orders = ({ orderList, isLoading }) => {
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const [orderState, setOrderState] = useState([{}]);
+  const userInfo = "user"
 
   // useEffect(() => {
   //   const setLoading = async () => {
@@ -55,6 +56,7 @@ const Orders = ({ orderList, isLoading }) => {
                     ordID={ord.orderID}
                     orderItem={ord}
                     detail={ord.orderDetail}
+                    userRole="user"
                   />
                 </div>
               ))}

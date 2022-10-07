@@ -9,6 +9,9 @@ import {
   LoginModal,
   SignUp,
   Orders,
+  Admin,
+  AdminManageOrder,
+  AdminStatistic,
 } from "./components";
 import axios from "axios";
 import Modal from "react-modal";
@@ -29,6 +32,12 @@ const App = () => {
   const [order, setOrder] = useState([{}]);
   const [orderListUser, setOrderListUser] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [admin, setAdmin] = useState({});
+  const [adminOrder, setAdminOrder] = useState({});
+  const [orderListAdmin, setOrderListAdmin] = useState([]);
+  const [numberConfirmOrder, setNumberConfirmOrder] = useState(0);
+  const [ordDataStatistic, setOrdDataStatistic] = useState([]);
+  const [ProductDataStatistic, setProductDataStatistic] = useState([]);
   useEffect(() => {
     const check = window.localStorage.getItem("checkLogin");
     const user = window.localStorage.getItem("user");
@@ -40,7 +49,16 @@ const App = () => {
       SetUserLogin(JSON.parse(user));
       if (JSON.parse(check) === true) {
         getOrderCustomer(JSON.parse(user).userID);
-        // getOrderDetail()
+        if (JSON.parse(user).user_type === "admin") {
+          getProductAdmin();
+          getOrderDataStatistic();
+          setAdmin(JSON.parse(user));
+          getOrderAdmin();
+          getORDConfirm();
+        } else {
+          setAdmin({});
+        }
+        // getOrderDetail();
       }
       fetchCart(JSON.parse(check), JSON.parse(user));
     } else {
@@ -246,6 +264,14 @@ const App = () => {
     }
   };
 
+  const getORDConfirm = () => {
+    axios
+      .get("http://localhost:8000/api/order/get_order/confirm")
+      .then((res) => {
+        setNumberConfirmOrder(res.data.number);
+      })
+      .catch((error) => console.log(error));
+  };
   const handleEmptyCart = async () => {
     if (loginSuccess === false) {
       const { cart } = await commerce.cart.empty();
@@ -295,6 +321,7 @@ const App = () => {
             fetchCart(true, response.data);
             window.location.reload();
           });
+
         // console.log("user",userLogin)
         // fetchCart(checkLogin, userLogin);
       } else if (Type === "google") {
@@ -313,6 +340,7 @@ const App = () => {
               password: " ",
               url: userLogin.picture,
               cartID: JSON.parse(cartTemp).id,
+              userType: "user",
             })
             .then(async (response) => {
               window.location.reload();
@@ -367,6 +395,7 @@ const App = () => {
                 password: " ",
                 url: userLogin.picture,
                 cartID: cart.id,
+                userType: "user",
               })
               .then(async (response) => {
                 window.localStorage.setItem(
@@ -419,6 +448,7 @@ const App = () => {
               password: " ",
               url: userLogin.picture.data.url,
               cartID: JSON.parse(cartTemp).id,
+              userType: "user",
             })
             .then(async (response) => {
               window.location.reload();
@@ -476,6 +506,7 @@ const App = () => {
                 password: " ",
                 url: userLogin.picture.data.url,
                 cartID: cart.id,
+                userType: "user",
               })
               .then(async (response) => {
                 window.localStorage.setItem(
@@ -539,12 +570,48 @@ const App = () => {
     });
   };
 
+  const getOrderAdminDetail = async (
+    orderID,
+    shippingData,
+    paymentType,
+    date,
+    status
+  ) => {
+    await commerce.checkout.getLive(orderID).then((response) => {
+      // setTestOrder(old => [...old,orderID])
+
+      const object = {
+        orderID: orderID,
+        orderDetail: response,
+        shippingData: shippingData,
+        paymentType: paymentType,
+        date: date,
+        status: status,
+      };
+      setOrderListAdmin((old) => [...old, object]);
+      // console.log(object)
+    });
+  };
+
   function getorddetail(date) {
     const object = {
       date: date,
     };
     setOrderListUser((old) => [...old, object]);
   }
+
+  const getOrderDataStatistic = () => {
+    const url = "http://localhost:8000/api/order/statistic/months/" + "12";
+    axios
+      .get(url)
+      .then(async function (response) {
+        setOrdDataStatistic(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  };
 
   const customStyles = {
     content: {
@@ -561,6 +628,20 @@ const App = () => {
     },
   };
 
+  console.log(ordDataStatistic);
+  function getProductAdmin() {
+    const url = "http://localhost:8000/api/product";
+    axios
+      .get(url)
+      .then(async function (response) {
+        setProductDataStatistic(response.data)
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  }
+  console.log(ProductDataStatistic)
   function getOrderCustomer(userID) {
     const url = "http://localhost:8000/api/order/find_order_cus/" + userID;
     axios
@@ -588,12 +669,36 @@ const App = () => {
       });
   }
 
-  const initializeCart = async () => {
-    await commerce.cart.refresh().then((cart) => {
-      setCart(cart);
-    });
-  };
-  console.log("order list ", orderListUser);
+  function getOrderAdmin() {
+    const url = "http://localhost:8000/api/order";
+    axios
+      .get(url)
+      .then(async function (response) {
+        // handle success
+        // setOrder(response.data.order);
+        setAdminOrder(response.data);
+        setIsLoading(true);
+        for (var i = 0; i < response.data.length; i++) {
+          await getOrderAdminDetail(
+            response.data[i].orderID,
+            response.data[i].shippingData,
+            response.data[i].paymentType,
+            response.data[i].date,
+            response.data[i].status
+          );
+          setIsLoading(false);
+        }
+        console.log(response);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  }
+
+  // console.log(adminOrder);
+  // console.log(orderListAdmin);
+  // console.log("statistic", ordDataStatistic);
 
   const [modalOpen, setModalOpen] = useState(false);
   return (
@@ -611,6 +716,8 @@ const App = () => {
           typeLogin={loginType}
           avatarURL={urlAvatar}
           numberItem={cart.total_items}
+          adminUser={admin}
+          numberConfirmOrd={numberConfirmOrder}
         />
 
         {modalOpen === true ? (
@@ -687,12 +794,28 @@ const App = () => {
             <ProductDetail ProductList={products} AddToCart={handleAddToCart} />
           </Route>
 
+          <Route exact path="/admin/statistic">
+            <AdminStatistic ordStatistic={ordDataStatistic} productStatistic={ProductDataStatistic}/>
+          </Route>
+
           <Route exact path="/compare">
             <ProductCompare products={products} />
           </Route>
 
           <Route exact path="/order">
             <Orders orderList={orderListUser} isLoading={isLoading} />
+          </Route>
+
+          <Route exact path="/admin">
+            <Admin numberConfirmORD={numberConfirmOrder} />
+          </Route>
+
+          <Route exact path="/admin/order">
+            <AdminManageOrder
+              orderList={orderListAdmin}
+              isLoading={isLoading}
+              ordStatistic={ordDataStatistic}
+            />
           </Route>
         </Switch>
 

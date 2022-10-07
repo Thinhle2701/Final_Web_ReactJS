@@ -35,7 +35,9 @@ const PaymentForm = ({
     const today = new Date();
     const time = today.getHours() + ":" + today.getMinutes();
     const currentDate =
-      `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}` + " " + time ;
+      `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}` +
+      " " +
+      time;
     var type_payment = "";
     console.log("user: ", customer);
     if (checkCOD === true) {
@@ -45,7 +47,7 @@ const PaymentForm = ({
     }
 
     await axios
-      .post("http://localhost:8000/api/order/add_order", {
+      .post("http://localhost:8000/api/order//add_order_temp", {
         orderID: checkoutToken.id,
         customerID: customer.userID,
         total: checkoutToken.live.subtotal.formatted_with_symbol,
@@ -61,7 +63,7 @@ const PaymentForm = ({
           address: shippingData.address,
         },
         date: currentDate,
-        status: "is Delivering",
+        status: "Wait To Confirm",
       })
       .then((response) => {
         console.log(response);

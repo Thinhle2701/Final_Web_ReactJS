@@ -7,3 +7,6 @@ export {default as ProductCompare} from "./Comparision/Compare";
 export {default as LoginModal} from "./Login/LoginForm";
 export {default as SignUp} from "./SignUp/SignUpForm"
 export {default as Orders} from "./OrderManage/Orders"
+export {default as Admin} from "./admin/admin"
+export {default as AdminManageOrder} from "./admin/Order/ManageOrder"
+export {default as AdminStatistic} from "./admin/Statistic/Chart"

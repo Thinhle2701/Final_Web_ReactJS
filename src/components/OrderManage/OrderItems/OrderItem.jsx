@@ -11,15 +11,23 @@ import {
   IconButton,
   Button,
 } from "@material-ui/core";
+import Select from "react-select";
 import greenTick from "../../../assets/greenTick.png";
 import ArrowLeft from "@material-ui/icons/ArrowLeft";
 import ArrowRight from "@material-ui/icons/ArrowRight";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import { commerce } from "../../../lib/commerce";
+import EditIcon from "@mui/icons-material/Edit";
 import Modal from "react-modal";
 import axios from "axios";
 import OrderDetail from "../OrderItems/OderDetail";
-const OrderItem = ({ ordID, orderItem, detail }) => {
+const options = [
+  { value: "is delivering", label: "🟡 is delivering" },
+  { value: "success", label: "🟢 success" },
+  { value: "is confirmed", label: "🟠 is confirmed" },
+];
+
+const OrderItem = ({ ordID, orderItem, detail, userRole }) => {
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const customStyles = {
     content: {
@@ -70,6 +78,25 @@ const OrderItem = ({ ordID, orderItem, detail }) => {
   const [list, setList] = useState([{}]);
   const [modalAskUserCancle, setModalAskUserCancle] = useState(false);
   const [modalDeleteSuccess, setmodalDeleteSuccess] = useState(false);
+  const [confirmOrder, setConfirmOrder] = useState("");
+  const [statusOrd, setStatusOrd] = useState(orderItem.status);
+  const [adminEdit, setAdminEdit] = useState(false);
+  const [selectStatus, setSelectStatus] = useState(orderItem.status);
+  const [colorLabel, setColorLabel] = useState("");
+
+  useEffect(() => {
+    console.log(orderItem.status);
+    if (statusOrd == "is delivering") {
+      setColorLabel("🟡is delivering");
+    } else if (statusOrd == "is confirmed") {
+      setColorLabel("🟠is confirmed");
+    } else if (statusOrd == "success") {
+      setColorLabel("🟢 success");
+    } else {
+      console.log("wait to confirm");
+      setColorLabel("🔴 wait to confirm");
+    }
+  });
   // console.log(detail.line_items.length);
   const [indexItem, setIndexItem] = useState(0);
   const handleClickArrowRight = () => {
@@ -89,6 +116,8 @@ const OrderItem = ({ ordID, orderItem, detail }) => {
       setIndexItem(temp);
     }
   };
+  console.log(selectStatus);
+  console.log(colorLabel);
 
   const handleOnClickDelete = async () => {
     const url_del = url + "api/order/delete/" + ordID;
@@ -103,6 +132,44 @@ const OrderItem = ({ ordID, orderItem, detail }) => {
     setmodalDeleteSuccess(false);
     window.location.reload();
   };
+  const handleConfirmOrder = () => {
+    setConfirmOrder("YES");
+    const url = "http://localhost:8000/api/order/update_status/" + ordID;
+    axios
+      .put(url, {
+        status: "is confirmed",
+      })
+      .then((res) => {
+        console.log(res);
+      });
+
+    setStatusOrd("is confirmed");
+  };
+
+  const handleUpdateStatusOrder = () => {
+    if (selectStatus != statusOrd) {
+      const url = "http://localhost:8000/api/order/update_status/" + ordID;
+      axios
+        .put(url, {
+          status: selectStatus,
+        })
+        .then((res) => {
+          console.log(res);
+        });
+      console.log("updated");
+    }
+
+    // console.log("color label", colorLabel);
+    setStatusOrd(selectStatus);
+    setAdminEdit(false);
+    // setConfirmOrder("YES");
+    console.log("hello", selectStatus);
+    console.log("hello thinh", statusOrd);
+  };
+  const handleCancleUpdateStatus = () => {
+    setAdminEdit(false);
+  };
+
   return (
     <>
       <div
@@ -134,7 +201,164 @@ const OrderItem = ({ ordID, orderItem, detail }) => {
             </div>
 
             <div style={{ marginLeft: "auto", paddingRight: "2%" }}>
-              <p>🟠 {orderItem.status}</p>
+              {/* <p>🟠 {orderItem.status}</p>
+              <Select options={options} /> */}
+              {userRole === "admin" ? (
+                <div>
+                  {orderItem.status === "Wait To Confirm" ? (
+                    <>
+                      {confirmOrder === "" ? (
+                        <>
+                          <p
+                            style={{
+                              paddingLeft: "10px",
+                              fontWeight: "bold",
+                              color: "red",
+                            }}
+                          >
+                            Wait To Confirm
+                          </p>
+                          <Button
+                            style={{ color: "green", fontSize: "22px" }}
+                            onClick={() => {
+                              handleConfirmOrder();
+                            }}
+                          >
+                            ✔️
+                          </Button>
+                          <Button style={{ color: "red", fontSize: "22px" }}>
+                            ❌
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          {confirmOrder === "YES" ? (
+                            <>
+                              {adminEdit === true ? (
+                                <>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Select
+                                      options={options}
+                                      placeholder={statusOrd}
+                                      onChange={(e) => {
+                                        console.log("test", e.value);
+
+                                        if (e.value == "is delivering") {
+                                          setColorLabel("🟡is delivering");
+                                        } else if (e.value == "is confirmed") {
+                                          setColorLabel("🟠is confirmed");
+                                        } else if (e.value == "success") {
+                                          setColorLabel("🟢 success");
+                                        } else {
+                                          console.log("exception");
+                                        }
+
+                                        setSelectStatus(e.value);
+                                      }}
+                                    />
+                                    <Button
+                                      variant="outlined"
+                                      onClick={() => {
+                                        handleUpdateStatusOrder();
+                                      }}
+                                    >
+                                      Update
+                                    </Button>
+                                    <Button
+                                      onClick={() => {
+                                        handleCancleUpdateStatus();
+                                      }}
+                                    >
+                                      Cancle
+                                    </Button>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  {" "}
+                                  <div style={{ display: "flex" }}>
+                                    {/* <p>🟠 {statusOrd}</p> */}
+                                    <p>{colorLabel}</p>
+                                    <IconButton
+                                      onClick={() => setAdminEdit(true)}
+                                    >
+                                      <EditIcon style={{ color: "black" }} />
+                                    </IconButton>
+                                  </div>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <p>🟠 is Cancled</p>
+                            </>
+                          )}
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {adminEdit === true ? (
+                        <>
+                          <div style={{ display: "flex", marginTop: "10px" }}>
+                            <Select
+                              options={options}
+                              placeholder={statusOrd}
+                              onChange={(e) => {
+                                setSelectStatus(e.value);
+                                if (e.value == "is delivering") {
+                                  setColorLabel("🟡is delivering");
+                                } else if (e.value == "is confirmed") {
+                                  setColorLabel("🟠is confirmed");
+                                } else if (e.value == "success") {
+                                  setColorLabel("🟢 success");
+                                } else {
+                                  console.log("exception");
+                                }
+                              }}
+                            />
+                            <Button
+                              variant="outlined"
+                              onClick={() => {
+                                handleUpdateStatusOrder();
+                              }}
+                            >
+                              Update
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                handleCancleUpdateStatus();
+                              }}
+                            >
+                              Cancle
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {" "}
+                          <div style={{ display: "flex" }}>
+                            {/* <p>🟠 {statusOrd}</p> */}
+                            <p>{colorLabel}</p>
+                            <IconButton onClick={() => setAdminEdit(true)}>
+                              <EditIcon style={{ color: "black" }} />
+                            </IconButton>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <p>{colorLabel}</p>
+                </div>
+              )}
             </div>
           </div>
 

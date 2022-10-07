@@ -49,7 +49,6 @@ function SignUpForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errMsg, setErrMsg] = useState("");
 
-
   const handleSubmit = async () => {
     const cartTemp = window.localStorage.getItem("cartTemp");
     console.log(username);
@@ -72,6 +71,7 @@ function SignUpForm() {
           email: email,
           url: "https://static.thenounproject.com/png/363640-200.png",
           cartID: JSON.parse(cartTemp),
+          userType: "user",
         })
         .then(async (res) => {
           {

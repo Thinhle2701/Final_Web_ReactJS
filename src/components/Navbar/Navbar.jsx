@@ -8,7 +8,7 @@ import {
   Menu,
   Typography,
 } from "@material-ui/core";
-
+import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
 import { Button } from "@material-ui/core";
 import TextField from "@mui/material/TextField";
 import HoverImage from "react-hover-image";
@@ -32,6 +32,8 @@ const Navbar = ({
   typeLogin,
   avatarURL,
   numberItem,
+  adminUser,
+  numberConfirmOrd
 }) => {
   const classes = useStyles();
   const location = useLocation();
@@ -131,7 +133,9 @@ const Navbar = ({
                   <MenuItem onClick={handleClose}>My Account</MenuItem>
                   <MenuItem>
                     <div>
-                      <Button component={Link} to="/order">Your Order</Button>
+                      <Button component={Link} to="/order">
+                        Your Order
+                      </Button>
                     </div>
                   </MenuItem>
                   <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
@@ -149,6 +153,24 @@ const Navbar = ({
           >
             <img style={{ height: "30px", width: "30px" }} src={compareLogo} />
           </Button>
+
+          {adminUser.user_type === "admin" ? (
+            <div style={{ display: "" }}>
+              <IconButton component={Link} to="/admin">
+                <div style={{display:"flex",alignItems:"right"}}>
+                  <Badge
+                    style={{ fontSize: "30px", display: "block" }}
+                    overlap="rectangular"
+                    badgeContent={numberConfirmOrd}
+                    color="primary"
+                  />
+                  <ManageHistoryIcon style={{ color: "black" }} />
+                </div>
+              </IconButton>
+            </div>
+          ) : (
+            <p></p>
+          )}
 
           <div className={classes.button}>
             <IconButton

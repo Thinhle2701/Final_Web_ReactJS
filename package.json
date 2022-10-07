@@ -9,6 +9,7 @@
     "@emotion/styled": "^11.9.3",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
+    "@mui/icons-material": "^5.10.6",
     "@mui/material": "^5.9.0",
     "@react-icons/all-files": "^4.1.0",
     "@stripe/react-stripe-js": "^1.9.0",
@@ -19,6 +20,7 @@
     "antd": "^4.22.3",
     "axios": "^0.27.2",
     "bootstrap": "^5.2.1",
+    "chart.js": "^3.9.1",
     "create-object-url": "^1.0.2",
     "html-to-image": "^1.10.8",
     "html-to-text": "^8.2.1",
@@ -26,6 +28,7 @@
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.0",
     "react-bootstrap": "^2.5.0",
+    "react-chartjs-2": "^4.3.1",
     "react-dom": "^18.2.0",
     "react-facebook-login": "^4.1.1",
     "react-hook-form": "^7.34.2",
@@ -40,6 +43,7 @@
     "react-show-more-button": "^1.0.0",
     "typeface-roboto": "^1.1.13",
     "url": "^0.11.0",
+    "utils": "^0.3.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
