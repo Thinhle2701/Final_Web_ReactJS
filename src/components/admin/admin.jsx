@@ -39,8 +39,8 @@ const admin = ({ numberConfirmORD }) => {
             />
             <p>Order Management</p>
             <img
-              style={{ width: "50px" }}
-              src="https://cdn-icons-png.flaticon.com/512/81/81845.png"
+              style={{ width: "120px" }}
+              src="https://static.vecteezy.com/system/resources/previews/003/738/370/original/management-project-icon-free-vector.jpg"
             ></img>
           </div>
         </Button>
@@ -59,16 +59,34 @@ const admin = ({ numberConfirmORD }) => {
             to="/admin/statistic"
           >
             <div style={{ textAlign: "center" }}>
-              <Badge
-                style={{ fontSize: "30px" }}
-                overlap="rectangular"
-                badgeContent={numberConfirmORD}
-                color="primary"
-              />
               <p>Statistic Chart</p>
               <img
-                style={{ width: "50px" }}
-                src="https://cdn-icons-png.flaticon.com/512/81/81845.png"
+                style={{ width: "100px" }}
+                src="https://icon-library.com/images/statistic-icon-png/statistic-icon-png-9.jpg"
+              ></img>
+            </div>
+          </Button>
+        </div>
+
+        <div style={{ marginLeft: "10%" }}>
+          <Button
+            variant="outlined"
+            style={{
+              backgroundColor: "white",
+              color: "black",
+              borderRadius: "50px",
+              height: "200px",
+              width: "300px",
+              border: "2px solid black",
+            }}
+            component={Link}
+            to="/admin/manageproduct"
+          >
+            <div style={{ textAlign: "center" }}>
+              <p>Product Management</p>
+              <img
+                style={{ width: "100px" }}
+                src="https://uxwing.com/wp-content/themes/uxwing/download/logistics-shipping-delivery/search-product-icon.png"
               ></img>
             </div>
           </Button>

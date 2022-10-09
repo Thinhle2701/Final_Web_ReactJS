@@ -12,6 +12,7 @@ import {
   Admin,
   AdminManageOrder,
   AdminStatistic,
+  AdminManageProduct,
 } from "./components";
 import axios from "axios";
 import Modal from "react-modal";
@@ -634,14 +635,14 @@ const App = () => {
     axios
       .get(url)
       .then(async function (response) {
-        setProductDataStatistic(response.data)
+        setProductDataStatistic(response.data);
       })
       .catch(function (error) {
         // handle error
         console.log(error);
       });
   }
-  console.log(ProductDataStatistic)
+  console.log(ProductDataStatistic);
   function getOrderCustomer(userID) {
     const url = "http://localhost:8000/api/order/find_order_cus/" + userID;
     axios
@@ -795,7 +796,10 @@ const App = () => {
           </Route>
 
           <Route exact path="/admin/statistic">
-            <AdminStatistic ordStatistic={ordDataStatistic} productStatistic={ProductDataStatistic}/>
+            <AdminStatistic
+              ordStatistic={ordDataStatistic}
+              productStatistic={ProductDataStatistic}
+            />
           </Route>
 
           <Route exact path="/compare">
@@ -815,6 +819,13 @@ const App = () => {
               orderList={orderListAdmin}
               isLoading={isLoading}
               ordStatistic={ordDataStatistic}
+            />
+          </Route>
+
+          <Route exact path="/admin/manageproduct">
+            <AdminManageProduct
+              productList={products}
+              handleSearchItem={searchProduct}
             />
           </Route>
         </Switch>

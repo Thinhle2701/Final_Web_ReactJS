@@ -12,7 +12,7 @@ function SearchBar({ onHandleSearchItem }) {
   const typingTimeoutRef = useRef(null);
   function handleSearchChange(e) {
     setSearchTerm(e.target.value);
-    // console.log(searchTerm);
+    console.log(e.target.value);
     const value = e.target.value;
     if(typingTimeoutRef.current)
     {

@@ -5,6 +5,7 @@ import jwt_decode from "jwt-decode";
 import FacebookLogin from "react-facebook-login";
 import { FaBeer } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import greenTick from "../../assets/greenTick.png";
 const api = axios.create({
   baseURL: `http://localhost:8000/api/user`,
 });
@@ -291,13 +292,13 @@ function LoginModal({
                   <img
                     style={{
                       height: "40px",
-                      width: "40px",
+                      width: "50px",
                       display: "block",
                       textAlign: "center",
                       marginLeft: "auto",
                       marginRight: "auto",
                     }}
-                    src="https://assets.stickpng.com/images/5aa78e207603fc558cffbf19.png"
+                    src={greenTick}
                   ></img>
                   <p
                     style={{
