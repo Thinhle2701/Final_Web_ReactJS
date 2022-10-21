@@ -32,7 +32,7 @@ const admin = ({ numberConfirmORD }) => {
         >
           <div style={{ textAlign: "center" }}>
             <Badge
-              style={{ fontSize: "30px" }}
+              style={{ fontSize: "30px",marginTop:"20px" }}
               overlap="rectangular"
               badgeContent={numberConfirmORD}
               color="primary"

@@ -154,7 +154,7 @@ const Navbar = ({
             <img style={{ height: "30px", width: "30px" }} src={compareLogo} />
           </Button>
 
-          {adminUser.user_type === "admin" ? (
+          {adminUser.user_type === "admin" && checkLogin == true ? (
             <div style={{ display: "" }}>
               <IconButton component={Link} to="/admin">
                 <div style={{display:"flex",alignItems:"right"}}>

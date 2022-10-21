@@ -10,6 +10,7 @@ import {
   ElementsConsumer,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { ImageList } from "@mui/material";
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 const PaymentForm = ({
   cart,
@@ -96,6 +97,7 @@ const PaymentForm = ({
     refreshCart();
   };
 
+
   return (
     <>
       <div ref={ref}>
@@ -181,7 +183,7 @@ const PaymentForm = ({
                 fontWeight: "bold",
               }}
             >
-              Cash On Delivery
+              Payment Card
             </p>
           </div>
           <br />

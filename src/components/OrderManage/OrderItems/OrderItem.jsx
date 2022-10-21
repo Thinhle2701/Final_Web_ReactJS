@@ -27,7 +27,14 @@ const options = [
   { value: "is confirmed", label: "🟠 is confirmed" },
 ];
 
-const OrderItem = ({ ordID, orderItem, detail, userRole }) => {
+const OrderItem = ({
+  ordID,
+  orderItem,
+  detail,
+  userRole,
+  setOrderConfirm,
+  numberOrderConfirm,
+}) => {
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const customStyles = {
     content: {
@@ -134,6 +141,7 @@ const OrderItem = ({ ordID, orderItem, detail, userRole }) => {
   };
   const handleConfirmOrder = () => {
     setConfirmOrder("YES");
+    setOrderConfirm(numberOrderConfirm - 1);
     const url = "http://localhost:8000/api/order/update_status/" + ordID;
     axios
       .put(url, {

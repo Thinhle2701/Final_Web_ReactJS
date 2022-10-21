@@ -11,29 +11,68 @@ import {
   Button,
 } from "@material-ui/core";
 import Modal from "react-modal";
+import axios from "axios";
 import ProductModal from "./ProductModal";
+import EditProduct from "./ProductEdit";
 import SearchBar from "../../SearchBar/SearchBar";
 import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
 const customStyles = {
   content: {
-    top: "50%",
+    top: "40%",
     left: "50%",
     right: "auto",
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
-    height: "700px",
-    width: "410px",
+    height: "600px",
+    width: "510px",
     backgroundColor: "white",
     borderColor: "black",
-    marginTop:"100px"
+    marginTop: "100px",
   },
 };
-const ManageProduct = ({ productList, handleSearchItem }) => {
+
+const customEditStyles = {
+  content: {
+    top: "40%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    height: "600px",
+    width: "510px",
+    backgroundColor: "white",
+    borderColor: "black",
+    marginTop: "100px",
+  },
+};
+const ManageProduct = ({
+  productList,
+  handleSearchItem,
+  categoriesProduct,
+}) => {
   const [productListSearch, setProductListSearch] = useState(productList);
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalEdit, setModalEdit] = useState(false);
+  const [productEdit, setProductEdit] = useState({});
   const handleEdit = (event) => {
     console.log(event.target.value);
+    const url = "https://api.chec.io/v1/products/" + event.target.value;
+    axios
+      .get(url, {
+        headers: {
+          "X-Authorization": "pk_4513267273233fc7080de820c6f5b5630e0fadf031a5a",
+        },
+      })
+      .then((response) => {
+        setProductEdit(response.data);
+        // console.log(response)
+        setModalEdit(true);
+      })
+      .catch((error) => {
+        console.log("error " + error);
+      });
   };
 
   const handleDelete = (event) => {
@@ -42,6 +81,7 @@ const ManageProduct = ({ productList, handleSearchItem }) => {
   // const handleSearchItem = () => {
   //   console.log();
   // };
+  console.log("product Edit: ", productEdit);
   return (
     <div style={{ marginTop: "100px" }}>
       <h1 style={{ textAlign: "center" }}>Product Management</h1>
@@ -54,10 +94,21 @@ const ManageProduct = ({ productList, handleSearchItem }) => {
             color: "white",
             borderRadius: "100px",
           }}
-          onClick={()=>setModalOpen(true)}
+          onClick={() => setModalOpen(true)}
         >
           + Add Product
         </Button>
+
+        {modalOpen === true ? (
+          <Modal isOpen={modalOpen} style={customStyles} ariaHideApp={false}>
+            <ProductModal
+              setOpenModal={setModalOpen}
+              categories={categoriesProduct}
+            />
+          </Modal>
+        ) : (
+          <p></p>
+        )}
         <Button
           style={{
             marginLeft: "5%",
@@ -141,6 +192,7 @@ const ManageProduct = ({ productList, handleSearchItem }) => {
                     value={pro.id}
                     onClick={(e) => {
                       handleEdit(e);
+                      // setModalEdit(true);
                     }}
                   >
                     📝Edit
@@ -170,13 +222,9 @@ const ManageProduct = ({ productList, handleSearchItem }) => {
         </table>
       </List>
 
-      {modalOpen === true ? (
-        <Modal
-          isOpen={modalOpen}
-          style={customStyles}
-          ariaHideApp={false}
-        >
-          <ProductModal setOpenModal={setModalOpen}/>
+      {modalEdit === true ? (
+        <Modal isOpen={modalEdit} style={customEditStyles} ariaHideApp={false}>
+          <EditProduct setOpenEditModal={setModalEdit} product={productEdit} />
         </Modal>
       ) : (
         <p></p>

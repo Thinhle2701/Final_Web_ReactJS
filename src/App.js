@@ -22,6 +22,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 const api = axios.create({
   baseURL: `http://localhost:8000/`,
 });
+const URL_API = "http://localhost:8000/";
 const App = () => {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
@@ -39,6 +40,7 @@ const App = () => {
   const [numberConfirmOrder, setNumberConfirmOrder] = useState(0);
   const [ordDataStatistic, setOrdDataStatistic] = useState([]);
   const [ProductDataStatistic, setProductDataStatistic] = useState([]);
+  const [categories, setCategories] = useState([]);
   useEffect(() => {
     const check = window.localStorage.getItem("checkLogin");
     const user = window.localStorage.getItem("user");
@@ -52,6 +54,7 @@ const App = () => {
         getOrderCustomer(JSON.parse(user).userID);
         if (JSON.parse(user).user_type === "admin") {
           getProductAdmin();
+          getCategoriesAdmin();
           getOrderDataStatistic();
           setAdmin(JSON.parse(user));
           getOrderAdmin();
@@ -72,9 +75,24 @@ const App = () => {
   }, []);
 
   const fetchProducts = async () => {
-    const { data } = await commerce.products.list();
-    setProducts(data);
-    console.log(data);
+    // const { data } = await commerce.products.list();
+    // // setProducts(data);
+    // // console.log(data);
+    // console.log("product: ", data);
+
+    const url = "https://api.chec.io/v1/products/";
+    axios
+      .get(url, {
+        headers: {
+          "X-Authorization": "pk_4513267273233fc7080de820c6f5b5630e0fadf031a5a",
+        },
+      })
+      .then((response) => {
+        setProducts(response.data.data);
+      })
+      .catch((error) => {
+        console.log("error " + error);
+      });
   };
 
   const searchProduct = async (productName) => {
@@ -266,8 +284,9 @@ const App = () => {
   };
 
   const getORDConfirm = () => {
+    const url = URL_API + "api/order/get_order/confirm";
     axios
-      .get("http://localhost:8000/api/order/get_order/confirm")
+      .get(url)
       .then((res) => {
         setNumberConfirmOrder(res.data.number);
       })
@@ -309,8 +328,7 @@ const App = () => {
         window.localStorage.setItem("urlAvatar", JSON.stringify(userLogin.url));
         window.localStorage.setItem("user", JSON.stringify(userLogin));
         const cartTemp = window.localStorage.getItem("cartTemp");
-        const url =
-          "http://localhost:8000/api/user/update_cart/" + userLogin.userID;
+        const url = URL_API + "/api/user/update_cart/" + userLogin.userID;
         axios
           .put(url, {
             cartID: JSON.parse(cartTemp).id,
@@ -333,8 +351,9 @@ const App = () => {
         );
         const cartTemp = window.localStorage.getItem("cartTemp");
         if (JSON.parse(cartTemp) !== null) {
+          const url = URL_API + "api/user/add_user_external";
           axios
-            .post("http://localhost:8000/api/user/add_user_external", {
+            .post(url, {
               username: userLogin.name,
               email: userLogin.email,
               login_type: "google",
@@ -353,8 +372,9 @@ const App = () => {
             })
             .catch((err) => {
               if (err.response.data.message === "Username is already exists") {
+                const url = URL_API + "api/user/find_google_account";
                 axios
-                  .post("http://localhost:8000/api/user/find_google_account", {
+                  .post(url, {
                     username: userLogin.name,
                     email: userLogin.email,
                   })
@@ -366,8 +386,7 @@ const App = () => {
                     // );
                     // fetchCart(true, res.data);
                     const url =
-                      "http://localhost:8000/api/user/update_cart/" +
-                      res.data.userID;
+                      URL_API + "api/user/update_cart/" + res.data.userID;
                     axios
                       .put(url, {
                         cartID: JSON.parse(cartTemp).id,
@@ -388,8 +407,9 @@ const App = () => {
             });
         } else {
           commerce.cart.refresh().then((cart) => {
+            const url = URL_API + "api/user/add_user_external";
             axios
-              .post("http://localhost:8000/api/user/add_user_external", {
+              .post(url, {
                 username: userLogin.name,
                 email: userLogin.email,
                 login_type: "google",
@@ -411,14 +431,12 @@ const App = () => {
                 if (
                   err.response.data.message === "Username is already exists"
                 ) {
+                  const url = URL_API + "api/user/find_google_account";
                   axios
-                    .post(
-                      "http://localhost:8000/api/user/find_google_account",
-                      {
-                        username: userLogin.name,
-                        email: userLogin.email,
-                      }
-                    )
+                    .post(url, {
+                      username: userLogin.name,
+                      email: userLogin.email,
+                    })
                     .then(async (res) => {
                       SetUserLogin(res.data);
                       window.localStorage.setItem(
@@ -441,8 +459,9 @@ const App = () => {
         const cartTemp = window.localStorage.getItem("cartTemp");
         console.log(JSON.parse(cartTemp));
         if (JSON.parse(cartTemp) !== null) {
+          const url = URL_API + "api/user/add_user_external";
           axios
-            .post("http://localhost:8000/api/user/add_user_external", {
+            .post(url, {
               username: userLogin.name,
               email: userLogin.email,
               login_type: "facebook",
@@ -461,14 +480,12 @@ const App = () => {
             })
             .catch((err) => {
               if (err.response.data.message === "Username is already exists") {
+                const url = URL_API + "api/user/find_facebook_account";
                 axios
-                  .post(
-                    "http://localhost:8000/api/user/find_facebook_account",
-                    {
-                      username: userLogin.name,
-                      email: userLogin.email,
-                    }
-                  )
+                  .post(url, {
+                    username: userLogin.name,
+                    email: userLogin.email,
+                  })
                   .then(async (res) => {
                     // SetUserLogin(res.data);
                     // window.localStorage.setItem(
@@ -477,8 +494,7 @@ const App = () => {
                     // );
                     // fetchCart(true, res.data);
                     const url =
-                      "http://localhost:8000/api/user/update_cart/" +
-                      res.data.userID;
+                      URL_API + "api/user/update_cart/" + res.data.userID;
                     axios
                       .put(url, {
                         cartID: JSON.parse(cartTemp).id,
@@ -499,8 +515,9 @@ const App = () => {
             });
         } else {
           commerce.cart.refresh().then((cart) => {
+            const url = URL_API + "api/user/add_user_external"
             axios
-              .post("http://localhost:8000/api/user/add_user_external", {
+              .post(url, {
                 username: userLogin.name,
                 email: userLogin.email,
                 login_type: "google",
@@ -522,9 +539,10 @@ const App = () => {
                 if (
                   err.response.data.message === "Username is already exists"
                 ) {
+                  const url = URL_API + "api/user/find_facebook_account"
                   axios
                     .post(
-                      "http://localhost:8000/api/user/find_facebook_account",
+                      url,
                       {
                         username: userLogin.name,
                         email: userLogin.email,
@@ -602,7 +620,7 @@ const App = () => {
   }
 
   const getOrderDataStatistic = () => {
-    const url = "http://localhost:8000/api/order/statistic/months/" + "12";
+    const url = URL_API + "api/order/statistic/months/" + "12";
     axios
       .get(url)
       .then(async function (response) {
@@ -631,7 +649,7 @@ const App = () => {
 
   console.log(ordDataStatistic);
   function getProductAdmin() {
-    const url = "http://localhost:8000/api/product";
+    const url = URL_API + "api/product";
     axios
       .get(url)
       .then(async function (response) {
@@ -644,7 +662,7 @@ const App = () => {
   }
   console.log(ProductDataStatistic);
   function getOrderCustomer(userID) {
-    const url = "http://localhost:8000/api/order/find_order_cus/" + userID;
+    const url = URL_API + "api/order/find_order_cus/" + userID;
     axios
       .get(url)
       .then(async function (response) {
@@ -670,8 +688,31 @@ const App = () => {
       });
   }
 
+  function getCategoriesAdmin() {
+    const url = "https://api.chec.io/v1/categories";
+    axios
+      .get(url, {
+        headers: {
+          "X-Authorization": "sk_451326b93cb3e4b4a7e3f853056401fccabf5fa7facfe",
+        },
+      })
+      .then((response) => {
+        for (let i = 0; i < response.data.data.length; i++) {
+          const obj = {
+            id: response.data.data[i].id,
+            name: response.data.data[i].name,
+          };
+          setCategories((prev) => [...prev, obj]);
+        }
+      })
+      .catch((error) => {
+        console.log("error " + error);
+      });
+  }
+
+  console.log("category", categories);
   function getOrderAdmin() {
-    const url = "http://localhost:8000/api/order";
+    const url = URL_API + "api/order";
     axios
       .get(url)
       .then(async function (response) {
@@ -731,6 +772,7 @@ const App = () => {
             }
           >
             <LoginModal
+              urlApi = {URL_API}
               setOpenModal={setModalOpen}
               setLoginUser={SetUserLogin}
               setSuccessLogin={SetLoginSuccess}
@@ -819,6 +861,8 @@ const App = () => {
               orderList={orderListAdmin}
               isLoading={isLoading}
               ordStatistic={ordDataStatistic}
+              numberConfirmORD={numberConfirmOrder}
+              setNumberConfirmORD={setNumberConfirmOrder}
             />
           </Route>
 
@@ -826,6 +870,7 @@ const App = () => {
             <AdminManageProduct
               productList={products}
               handleSearchItem={searchProduct}
+              categoriesProduct={categories}
             />
           </Route>
         </Switch>

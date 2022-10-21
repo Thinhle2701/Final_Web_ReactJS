@@ -21,14 +21,18 @@ const Compare = ({ products }) => {
     { id: "", slug: "", name: "" },
   ]);
 
-  const [PricePD1, setPricePD1] = useState({formatted: "",
-  formatted_with_code: "",
-  formatted_with_symbol: "",
-  raw: 0});
-  const [PricePD2, setPricePD2] = useState({formatted: "",
-  formatted_with_code: "",
-  formatted_with_symbol: "",
-  raw: 0});
+  const [PricePD1, setPricePD1] = useState({
+    formatted: "",
+    formatted_with_code: "",
+    formatted_with_symbol: "",
+    raw: 0,
+  });
+  const [PricePD2, setPricePD2] = useState({
+    formatted: "",
+    formatted_with_code: "",
+    formatted_with_symbol: "",
+    raw: 0,
+  });
 
   const [ImagesProduct1, setImagesProduct1] = useState([]);
   const [ImagesProduct2, setImagesProduct2] = useState([]);
@@ -53,7 +57,7 @@ const Compare = ({ products }) => {
 
     setProductListTwo(array);
   }
-  console.log(PricePD1)
+  console.log(PricePD1);
   function handleChangeImageProductOne(img) {
     var images = [];
     for (var i = 0; i < img.length; i++) {
@@ -65,7 +69,7 @@ const Compare = ({ products }) => {
     setImagesProduct1(images);
   }
 
-  console.log("Price",PricePD1.formatted_with_symbol)
+  console.log("Price", PricePD1.formatted_with_symbol);
   function handleChangeImageProductTwo(img) {
     var images = [];
     for (var i = 0; i < img.length; i++) {
@@ -79,12 +83,12 @@ const Compare = ({ products }) => {
 
   function handleChange(e) {
     setcheckChooseProductOne(true);
-    setcheckChooseProductTwo(false)
+    setcheckChooseProductTwo(false);
     for (var i = 0; i < productListOne.length; i++) {
       if (productListOne[i].id === e.target.value) {
         setSelectProductOne(productListOne[i]);
         setCategories(productListOne[i].categories);
-        setPricePD1(productListOne[i].price)
+        setPricePD1(productListOne[i].price);
 
         handleFilterProductListTwo(
           productListOne[i].categories[0].name,
@@ -144,7 +148,7 @@ const Compare = ({ products }) => {
                   fullWidth
                   value={selectProductOne.name}
                   onChange={(e) => {
-                    setcheckChooseProductTwo(false)
+                    setcheckChooseProductTwo(false);
                     handleChange(e);
                   }}
                 >
@@ -202,7 +206,7 @@ const Compare = ({ products }) => {
                       if (productListOne[i].id === e.target.value) {
                         setSelectProductTwo(productListOne[i]);
                         setcheckChooseProductTwo(true);
-                        setPricePD2(productListOne[i].price)
+                        setPricePD2(productListOne[i].price);
                         handleChangeImageProductTwo(productListOne[i].assets);
                       }
                     }
@@ -261,14 +265,13 @@ const Compare = ({ products }) => {
             >
               {checkChooseProductTwo === true ? (
                 <p
-                dangerouslySetInnerHTML={{
-                  __html: selectProductTwo.description,
-                }}
-              ></p>
+                  dangerouslySetInnerHTML={{
+                    __html: selectProductTwo.description,
+                  }}
+                ></p>
               ) : (
                 <p></p>
               )}
-
             </th>
           </tr>
           <tr style={{ height: "100px" }}>
@@ -277,7 +280,7 @@ const Compare = ({ products }) => {
             </th>
             <th style={{ textAlign: "center" }}>
               {checkChooseProductOne === true ? (
-                <div style={{ width: "250px", paddingLeft: "190px" }}>
+                <div style={{ width: "250px", marginLeft: "20%" }}>
                   <ImageGallery items={ImagesProduct1} />
                 </div>
               ) : (
@@ -287,7 +290,7 @@ const Compare = ({ products }) => {
 
             <th style={{ textAlign: "center" }}>
               {checkChooseProductTwo === true ? (
-                <div style={{ width: "250px", paddingLeft: "190px" }}>
+                <div style={{ width: "250px", marginLeft: "20%" }}>
                   <ImageGallery items={ImagesProduct2} />
                 </div>
               ) : (
@@ -296,22 +299,22 @@ const Compare = ({ products }) => {
             </th>
           </tr>
 
-          <tr style={{backgroundColor:'white'}}>
-            <th style={{textAlign:'center'}}>
+          <tr style={{ backgroundColor: "white" }}>
+            <th style={{ textAlign: "center" }}>
               <p>Price</p>
             </th>
 
-            <th style={{textAlign:'center',fontSize:"25px"}}> 
-            {checkChooseProductOne === true ? (
-              <p>{PricePD1.formatted_with_code}</p>
+            <th style={{ textAlign: "center", fontSize: "25px" }}>
+              {checkChooseProductOne === true ? (
+                <p>{PricePD1.formatted_with_code}</p>
               ) : (
                 <p></p>
               )}
             </th>
 
-            <th style={{textAlign:'center',fontSize:"25px"}}>
-            {checkChooseProductTwo === true ? (
-              <p style={{}}>{PricePD2.formatted_with_code}</p>
+            <th style={{ textAlign: "center", fontSize: "25px" }}>
+              {checkChooseProductTwo === true ? (
+                <p style={{}}>{PricePD2.formatted_with_code}</p>
               ) : (
                 <p></p>
               )}

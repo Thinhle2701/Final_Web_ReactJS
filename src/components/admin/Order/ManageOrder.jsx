@@ -4,7 +4,7 @@ import { Typography, List, ListItem, ListItemText } from "@material-ui/core";
 import OrderItem from "../../OrderManage/OrderItems/OrderItem";
 import { orderData } from "../Order/Chart/OrderData";
 import axios from "axios";
-const ManageOrder = ({ orderList, isLoading, ordStatistic }) => {
+const ManageOrder = ({ orderList, isLoading, ordStatistic,setNumberConfirmORD,numberConfirmORD }) => {
   const [ordData, setOrdData] = useState({
     labels: ordStatistic.map((data) => data.month),
     datasets: [
@@ -74,6 +74,8 @@ const ManageOrder = ({ orderList, isLoading, ordStatistic }) => {
                         orderItem={ord}
                         detail={ord.orderDetail}
                         userRole="admin"
+                        numberOrderConfirm={numberConfirmORD}
+                        setOrderConfirm={setNumberConfirmORD}
                       />
                     </div>
                   ))}
