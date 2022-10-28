@@ -22,7 +22,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 const api = axios.create({
   baseURL: `http://localhost:8000/`,
 });
-const URL_API = "http://localhost:8000/";
+const URL_API = "https://thinh-ecommerce-nodejs.herokuapp.com/";
 const App = () => {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
@@ -515,7 +515,7 @@ const App = () => {
             });
         } else {
           commerce.cart.refresh().then((cart) => {
-            const url = URL_API + "api/user/add_user_external"
+            const url = URL_API + "api/user/add_user_external";
             axios
               .post(url, {
                 username: userLogin.name,
@@ -539,15 +539,12 @@ const App = () => {
                 if (
                   err.response.data.message === "Username is already exists"
                 ) {
-                  const url = URL_API + "api/user/find_facebook_account"
+                  const url = URL_API + "api/user/find_facebook_account";
                   axios
-                    .post(
-                      url,
-                      {
-                        username: userLogin.name,
-                        email: userLogin.email,
-                      }
-                    )
+                    .post(url, {
+                      username: userLogin.name,
+                      email: userLogin.email,
+                    })
                     .then(async (res) => {
                       SetUserLogin(res.data);
                       window.localStorage.setItem(
@@ -772,7 +769,7 @@ const App = () => {
             }
           >
             <LoginModal
-              urlApi = {URL_API}
+              urlApi={URL_API}
               setOpenModal={setModalOpen}
               setLoginUser={SetUserLogin}
               setSuccessLogin={SetLoginSuccess}

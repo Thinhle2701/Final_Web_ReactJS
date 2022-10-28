@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { storage } from "../../../firebase";
 import {
@@ -36,7 +36,8 @@ const ProductModal = ({ setOpenModal, categories }) => {
   const [productPrice, setProductPrice] = useState(0);
   const [productCategory, setProductCategory] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [description, setDescription] = useState('<p></p>');
+  const [description, setDescription] = useState("<p></p>");
+  const inputRef = useRef(null);
   const uploadImage = () => {
     if (imageUpload == null) return;
 
@@ -177,7 +178,7 @@ const ProductModal = ({ setOpenModal, categories }) => {
             })
             .then((response) => {
               console.log(response);
-              setOpenModal(false)
+              setOpenModal(false);
             })
             .catch(function (err) {
               console.log(err);
@@ -324,6 +325,7 @@ const ProductModal = ({ setOpenModal, categories }) => {
                 )}
                 {imageList.length === 0 ? <div></div> : <div></div>}
                 <ImageGallery
+                  inputRef={inputRef}
                   style={{}}
                   items={imageList}
                   showIndex={true}

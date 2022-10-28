@@ -83,8 +83,11 @@ const ManageProduct = ({
   // };
   console.log("product Edit: ", productEdit);
   return (
-    <div style={{ marginTop: "100px" }}>
-      <h1 style={{ textAlign: "center" }}>Product Management</h1>
+    <div style={{}}>
+      <h1 style={{ textAlign: "center", marginTop: "100px" }}>
+        Product Management
+      </h1>
+      <div></div>
       <div style={{ marginLeft: "37%", display: "flex" }}>
         <SearchBar onHandleSearchItem={handleSearchItem} />
         <Button
@@ -115,6 +118,9 @@ const ManageProduct = ({
             backgroundColor: "#0D9A9A",
             color: "white",
             borderRadius: "100px",
+          }}
+          onClick={() => {
+            window.location.reload();
           }}
         >
           ↻ Refresh
@@ -224,7 +230,11 @@ const ManageProduct = ({
 
       {modalEdit === true ? (
         <Modal isOpen={modalEdit} style={customEditStyles} ariaHideApp={false}>
-          <EditProduct setOpenEditModal={setModalEdit} product={productEdit} />
+          <EditProduct
+            setOpenEditModal={setModalEdit}
+            product={productEdit}
+            categories={categoriesProduct}
+          />
         </Modal>
       ) : (
         <p></p>
