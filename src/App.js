@@ -13,6 +13,7 @@ import {
   AdminManageOrder,
   AdminStatistic,
   AdminManageProduct,
+  Profile,
 } from "./components";
 import axios from "axios";
 import Modal from "react-modal";
@@ -22,7 +23,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 const api = axios.create({
   baseURL: `http://localhost:8000/`,
 });
-const URL_API = "https://thinh-ecommerce-nodejs.herokuapp.com/";
+const URL_API = "http://localhost:8000/";
 const App = () => {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
@@ -869,6 +870,9 @@ const App = () => {
               handleSearchItem={searchProduct}
               categoriesProduct={categories}
             />
+          </Route>
+          <Route exact path="/profile">
+            <Profile />
           </Route>
         </Switch>
 
