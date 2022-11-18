@@ -25,7 +25,7 @@ const options = [
   { value: "strawberry", label: "Strawberry" },
   { value: "vanilla", label: "Vanilla" },
 ];
-const ProductModal = ({ setOpenModal, categories }) => {
+const ProductModal = ({ setOpenModal, categories,urlAPI }) => {
   const [imageUpload, setImageUpload] = useState(null);
   const [imageList, setImageList] = useState([]);
   const [imageChoose, setImageChoose] = useState("");
@@ -167,7 +167,7 @@ const ProductModal = ({ setOpenModal, categories }) => {
           }
         )
         .then(async (response) => {
-          const url = "http://localhost:8000/api/product/add_product";
+          const url = urlAPI + "api/product/add_product";
           await axios
             .post(url, {
               id: response.data.id,
@@ -176,9 +176,10 @@ const ProductModal = ({ setOpenModal, categories }) => {
               price: response.data.price.formatted_with_symbol,
               numberOnSale: 0,
             })
-            .then((response) => {
+            .then(async (response) => {
               console.log(response);
-              setOpenModal(false);
+              await setOpenModal(false);
+              window.location.reload();
             })
             .catch(function (err) {
               console.log(err);

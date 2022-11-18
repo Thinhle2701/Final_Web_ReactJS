@@ -23,7 +23,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 const api = axios.create({
   baseURL: `http://localhost:8000/`,
 });
-const URL_API = "http://localhost:8000/";
+const URL_API = "https://thinh-ecommerce-nodejs.herokuapp.com/";
 const App = () => {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
@@ -96,6 +96,7 @@ const App = () => {
       });
   };
 
+  console.log("ord", orderListUser);
   const searchProduct = async (productName) => {
     const { data } = await commerce.products.list();
 
@@ -156,20 +157,58 @@ const App = () => {
         window.localStorage.setItem("cartTemp", JSON.stringify(cart));
       });
     } else {
-      const url = "https://api.chec.io/v1/carts/" + user.cartID;
-      axios
-        .get(url, {
-          headers: {
-            "X-Authorization":
-              "pk_4513267273233fc7080de820c6f5b5630e0fadf031a5a",
-          },
-        })
-        .then((response) => {
-          setCart(response.data);
-        })
-        .catch((error) => {
-          console.log("error " + error);
+      if (user.cartID) {
+        const url = "https://api.chec.io/v1/carts/" + user.cartID;
+        axios
+          .get(url, {
+            headers: {
+              "X-Authorization":
+                "pk_4513267273233fc7080de820c6f5b5630e0fadf031a5a",
+            },
+          })
+          .then((response) => {
+            setCart(response.data);
+          })
+          .catch((error) => {
+            commerce.cart.refresh().then((cart) => {
+              setCart(cart);
+              const url = URL_API + "api/user/update_cart/" + user.userID;
+              axios
+                .put(url, {
+                  cartID: cart.id,
+                })
+                .then((response) => {
+                  console.log(response);
+                  SetUserLogin(response.data);
+                  window.localStorage.setItem(
+                    "user",
+                    JSON.stringify(response.data)
+                  );
+                  // fetchCart(true, response.data)
+                  // window.location.reload()
+                });
+            });
+          });
+      } else {
+        commerce.cart.refresh().then((cart) => {
+          setCart(cart);
+          const url = URL_API + "api/user/update_cart/" + user.userID;
+          axios
+            .put(url, {
+              cartID: cart.id,
+            })
+            .then((response) => {
+              console.log(response);
+              SetUserLogin(response.data);
+              window.localStorage.setItem(
+                "user",
+                JSON.stringify(response.data)
+              );
+              // fetchCart(true, response.data)
+              // window.location.reload()
+            });
         });
+      }
     }
   };
 
@@ -329,7 +368,7 @@ const App = () => {
         window.localStorage.setItem("urlAvatar", JSON.stringify(userLogin.url));
         window.localStorage.setItem("user", JSON.stringify(userLogin));
         const cartTemp = window.localStorage.getItem("cartTemp");
-        const url = URL_API + "/api/user/update_cart/" + userLogin.userID;
+        const url = URL_API + "api/user/update_cart/" + userLogin.userID;
         axios
           .put(url, {
             cartID: JSON.parse(cartTemp).id,
@@ -395,6 +434,11 @@ const App = () => {
                       .then((response) => {
                         console.log(response);
                         SetUserLogin(response.data);
+                        setURLAvatar(response.data.url);
+                        window.localStorage.setItem(
+                          "urlAvatar",
+                          JSON.stringify(response.data.url)
+                        );
                         window.localStorage.setItem(
                           "user",
                           JSON.stringify(response.data)
@@ -571,20 +615,42 @@ const App = () => {
     date,
     status
   ) => {
-    await commerce.checkout.getLive(orderID).then((response) => {
-      // setTestOrder(old => [...old,orderID])
+    // await commerce.checkout.getLive(orderID).then((response) => {
+    //   // setTestOrder(old => [...old,orderID])
 
-      const object = {
-        orderID: orderID,
-        orderDetail: response,
-        shippingData: shippingData,
-        paymentType: paymentType,
-        date: date,
-        status: status,
-      };
-      setOrderListUser((old) => [...old, object]);
-      // console.log(object)
-    });
+    //   const object = {
+    //     orderID: orderID,
+    //     orderDetail: response,
+    //     shippingData: shippingData,
+    //     paymentType: paymentType,
+    //     date: date,
+    //     status: status,
+    //   };
+    //   setOrderListUser((old) => [...old, object]);
+    //   // console.log(object)
+    // });
+    const url = "https://api.chec.io/v1/orders/" + orderID;
+    await axios
+      .get(url, {
+        headers: {
+          "X-Authorization":
+            "sk_test_4513288b8800ade424556f7c24a4c3c7b5c579c9d2e5a",
+        },
+      })
+      .then(async (response) => {
+        const object = {
+          orderID: orderID,
+          orderDetail: response.data,
+          shippingData: shippingData,
+          paymentType: paymentType,
+          date: date,
+          status: status,
+        };
+        await setOrderListUser((old) => [...old, object]);
+      })
+      .catch((error) => {
+        console.log("error " + error);
+      });
   };
 
   const getOrderAdminDetail = async (
@@ -594,20 +660,42 @@ const App = () => {
     date,
     status
   ) => {
-    await commerce.checkout.getLive(orderID).then((response) => {
-      // setTestOrder(old => [...old,orderID])
+    // await commerce.checkout.getLive(orderID).then((response) => {
+    //   // setTestOrder(old => [...old,orderID])
 
-      const object = {
-        orderID: orderID,
-        orderDetail: response,
-        shippingData: shippingData,
-        paymentType: paymentType,
-        date: date,
-        status: status,
-      };
-      setOrderListAdmin((old) => [...old, object]);
-      // console.log(object)
-    });
+    //   const object = {
+    //     orderID: orderID,
+    //     orderDetail: response,
+    //     shippingData: shippingData,
+    //     paymentType: paymentType,
+    //     date: date,
+    //     status: status,
+    //   };
+    //   setOrderListAdmin((old) => [...old, object]);
+    //   // console.log(object)
+    // });
+    const url = "https://api.chec.io/v1/orders/" + orderID;
+    await axios
+      .get(url, {
+        headers: {
+          "X-Authorization":
+            "sk_test_4513288b8800ade424556f7c24a4c3c7b5c579c9d2e5a",
+        },
+      })
+      .then(async (response) => {
+        const object = {
+          orderID: orderID,
+          orderDetail: response.data,
+          shippingData: shippingData,
+          paymentType: paymentType,
+          date: date,
+          status: status,
+        };
+        await setOrderListAdmin((old) => [...old, object]);
+      })
+      .catch((error) => {
+        console.log("error " + error);
+      });
   };
 
   function getorddetail(date) {
@@ -667,6 +755,9 @@ const App = () => {
         // handle success
         setOrder(response.data.order);
         setIsLoading(true);
+        if (response.data.order.length == 0) {
+          setIsLoading(false);
+        }
         for (var i = 0; i < response.data.order.length; i++) {
           await getOrderDetail(
             response.data.order[i].orderID,
@@ -708,7 +799,6 @@ const App = () => {
       });
   }
 
-  console.log("category", categories);
   function getOrderAdmin() {
     const url = URL_API + "api/order";
     axios
@@ -716,8 +806,19 @@ const App = () => {
       .then(async function (response) {
         // handle success
         // setOrder(response.data.order);
-        setAdminOrder(response.data);
-        setIsLoading(true);
+        // setAdminOrder(response.data);
+        // setIsLoading(true);
+        // for (var i = 0; i < response.data.length; i++) {
+        //   await getOrderAdminDetail(
+        //     response.data[i].orderID,
+        //     response.data[i].shippingData,
+        //     response.data[i].paymentType,
+        //     response.data[i].date,
+        //     response.data[i].status
+        //   );
+        //   setIsLoading(false);
+        // }
+        setIsLoading(false);
         for (var i = 0; i < response.data.length; i++) {
           await getOrderAdminDetail(
             response.data[i].orderID,
@@ -726,9 +827,19 @@ const App = () => {
             response.data[i].date,
             response.data[i].status
           );
-          setIsLoading(false);
+          // setIsLoading(false);
         }
-        console.log(response);
+        // for (var i = response.data.length - 1; i >= 0; i--) {
+        //   getOrderAdminDetail(
+        //     response.data[i].orderID,
+        //     response.data[i].shippingData,
+        //     response.data[i].paymentType,
+        //     response.data[i].date,
+        //     response.data[i].status
+        //   );
+        //   // setIsLoading(false);
+        // }
+        // console.log("res api", response);
       })
       .catch(function (error) {
         // handle error
@@ -793,7 +904,7 @@ const App = () => {
             />
           </Route>
           <Route exact path="/Signup">
-            <SignUp />
+            <SignUp urlAPI={URL_API} />
           </Route>
 
           <Route exact path="/cart">
@@ -822,6 +933,7 @@ const App = () => {
             path="/checkout"
             render={() => (
               <Checkout
+                urlAPI={URL_API}
                 cart={cart}
                 order={order}
                 user={userLogin}
@@ -847,7 +959,11 @@ const App = () => {
           </Route>
 
           <Route exact path="/order">
-            <Orders orderList={orderListUser} isLoading={isLoading} />
+            <Orders
+              orderList={orderListUser}
+              isLoading={isLoading}
+              urlAPI={URL_API}
+            />
           </Route>
 
           <Route exact path="/admin">
@@ -857,7 +973,7 @@ const App = () => {
           <Route exact path="/admin/order">
             <AdminManageOrder
               orderList={orderListAdmin}
-              isLoading={isLoading}
+              isLoading={false}
               ordStatistic={ordDataStatistic}
               numberConfirmORD={numberConfirmOrder}
               setNumberConfirmORD={setNumberConfirmOrder}
@@ -866,13 +982,19 @@ const App = () => {
 
           <Route exact path="/admin/manageproduct">
             <AdminManageProduct
+              urlAPI={URL_API}
               productList={products}
               handleSearchItem={searchProduct}
               categoriesProduct={categories}
             />
           </Route>
           <Route exact path="/profile">
-            <Profile />
+            <Profile
+              urlAPI={URL_API}
+              user={userLogin}
+              checkLogin={loginSuccess}
+              setLoginUser={SetUserLogin}
+            />
           </Route>
         </Switch>
 

@@ -20,7 +20,7 @@ import { v4 } from "uuid";
 import { set } from "react-hook-form";
 import { URL } from "url";
 
-const ProductEdit = ({ setOpenEditModal, product, categories }) => {
+const ProductEdit = ({ setOpenEditModal, product, categories, urlAPI }) => {
   const [productName, setProductName] = useState(product.name);
   const [productPrice, setProductPrice] = useState(product.price.formatted);
   const [productDescription, setProductDescription] = useState(
@@ -42,17 +42,18 @@ const ProductEdit = ({ setOpenEditModal, product, categories }) => {
     setProductDescription(event.target.value);
   };
   const handleClickSave = () => {
-    console.log(product.categories[0].id);
-    console.log(productCategory.id);
+    console.log(productPrice);
+    console.log(product.price.formatted_with_symbol);
     if (
       product.name === productName &&
-      product.price.formatted_with_symbol === productPrice &&
+      product.price.formatted === productPrice &&
       product.description === productDescription &&
       product.categories[0].id === productCategory.id
     ) {
       console.log("No change ");
     } else {
       const strCate = productCategory.id;
+      console.log("cate: ", strCate);
       const assetsList = [];
       for (let i = 0; i < imageList.length; i++) {
         const obj = {
@@ -87,13 +88,12 @@ const ProductEdit = ({ setOpenEditModal, product, categories }) => {
           }
         )
         .then(async (response) => {
-          const url = "http://localhost:8000/api/product/update/" + product.id;
+          const url = urlAPI + "api/product/update/" + product.id;
           await axios
             .put(url, {
               name: response.data.name,
               url: response.data.image.url,
               price: response.data.price.formatted_with_symbol,
-
             })
             .then((res) => {
               console.log("api", res);

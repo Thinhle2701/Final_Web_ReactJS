@@ -101,16 +101,7 @@ const Compare = ({ products }) => {
 
   return (
     <div>
-      <p
-        style={{
-          marginTop: "100px",
-          alignItems: "center",
-          textAlign: "center",
-        }}
-      >
-        hello
-      </p>
-
+      <h1 style={{ marginTop: "100px",textAlign:"center" }}>Compare Product</h1>
       <div style={{ marginLeft: "50px", marginRight: "50px" }}>
         <table
           style={{
