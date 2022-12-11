@@ -158,7 +158,7 @@ const PaymentForm = ({
       } else {
         type_payment = "Card";
       }
-      const url = URLAPI + "api/order/add_order_temp";
+      const url = "https://apple-store-deploy.herokuapp.com/" + "api/order/add_order_temp";
       await axios
         .post(url, {
           orderID: order.id,
@@ -239,72 +239,72 @@ const PaymentForm = ({
     }
   };
 
-  const handleSubmitTemp = async (e) => {
-    e.preventDefault();
+  // const handleSubmitTemp = async (e) => {
+  //   e.preventDefault();
 
-    const today = new Date();
-    const time = today.getHours() + ":" + today.getMinutes();
-    const currentDate =
-      `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}` +
-      " " +
-      time;
-    var type_payment = "";
-    console.log("user: ", customer);
-    if (checkCOD === true) {
-      type_payment = "COD";
-    } else {
-      type_payment = "Card";
-    }
+  //   const today = new Date();
+  //   const time = today.getHours() + ":" + today.getMinutes();
+  //   const currentDate =
+  //     `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}` +
+  //     " " +
+  //     time;
+  //   var type_payment = "";
+  //   console.log("user: ", customer);
+  //   if (checkCOD === true) {
+  //     type_payment = "COD";
+  //   } else {
+  //     type_payment = "Card";
+  //   }
 
-    await axios
-      .post("http://localhost:8000/api/order/add_order_temp", {
-        orderID: checkoutToken.id,
-        customerID: customer.userID,
-        total: checkoutToken.live.subtotal.formatted_with_symbol,
-        paymentType: type_payment,
-        shippingData: {
-          firstName: shippingData.firstName,
-          lastName: shippingData.lastName,
-          email: shippingData.email,
-          phone: shippingData.phone,
-          city: city,
-          district: shippingData.shippingDistrict,
-          ward: shippingData.shippingWard,
-          address: shippingData.address,
-        },
-        date: currentDate,
-        status: "Wait To Confirm",
-      })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  //   await axios
+  //     .post("http://localhost:8000/api/order/add_order_temp", {
+  //       orderID: checkoutToken.id,
+  //       customerID: customer.userID,
+  //       total: checkoutToken.live.subtotal.formatted_with_symbol,
+  //       paymentType: type_payment,
+  //       shippingData: {
+  //         firstName: shippingData.firstName,
+  //         lastName: shippingData.lastName,
+  //         email: shippingData.email,
+  //         phone: shippingData.phone,
+  //         city: city,
+  //         district: shippingData.shippingDistrict,
+  //         ward: shippingData.shippingWard,
+  //         address: shippingData.address,
+  //       },
+  //       date: currentDate,
+  //       status: "Wait To Confirm",
+  //     })
+  //     .then((response) => {
+  //       console.log(response);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
 
-    const name = shippingData.firstName + shippingData.lastName;
-    emailjs.init("WnU7YjuW7qxqmeZng");
-    emailjs
-      .send("service_1rdwrdi", "template_qlzppko", {
-        from_name: "Apple Store",
-        user_name: name,
-        ord_id: checkoutToken.id,
-        user_email: shippingData.email,
-        payment: type_payment,
-        phone: shippingData.phone,
-        address: shippingData.address,
-      })
-      .then(
-        function () {
-          console.log("SUCCESS!");
-        },
-        function (error) {
-          console.log("FAILED...", error);
-        }
-      );
+  //   const name = shippingData.firstName + shippingData.lastName;
+  //   emailjs.init("WnU7YjuW7qxqmeZng");
+  //   emailjs
+  //     .send("service_1rdwrdi", "template_qlzppko", {
+  //       from_name: "Apple Store",
+  //       user_name: name,
+  //       ord_id: checkoutToken.id,
+  //       user_email: shippingData.email,
+  //       payment: type_payment,
+  //       phone: shippingData.phone,
+  //       address: shippingData.address,
+  //     })
+  //     .then(
+  //       function () {
+  //         console.log("SUCCESS!");
+  //       },
+  //       function (error) {
+  //         console.log("FAILED...", error);
+  //       }
+  //     );
 
-    refreshCart();
-  };
+  //   refreshCart();
+  // };
 
   return (
     <>
