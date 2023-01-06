@@ -145,7 +145,7 @@ const OrderItem = ({
   const handleConfirmOrder = () => {
     setConfirmOrder("YES");
     setOrderConfirm(numberOrderConfirm - 1);
-    const url = urlAPI + "api/order/update_status/" + ordID;
+    const url = "https://apple-store-deploy.herokuapp.com/" + "api/order/update_status/" + ordID;
     axios
       .put(url, {
         status: "is confirmed",
@@ -159,7 +159,7 @@ const OrderItem = ({
 
   const handleUpdateStatusOrder = () => {
     if (selectStatus != statusOrd) {
-      const url = urlAPI + "api/order/update_status/" + ordID;
+      const url = "https://apple-store-deploy.herokuapp.com/" + "api/order/update_status/" + ordID;
       axios
         .put(url, {
           status: selectStatus,
